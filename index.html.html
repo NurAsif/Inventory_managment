@@ -1,0 +1,1474 @@
+<!doctype html>
+<html lang="bn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InventoryPro Dashboard</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --bg-primary: #ffffff;
+        --bg-secondary: #f5f5f4;
+        --bg-tertiary: #f0efec;
+        --text-primary: #1c1b1a;
+        --text-secondary: #6b6b68;
+        --text-hint: #9a9a96;
+        --border-light: rgba(0, 0, 0, 0.12);
+        --border-medium: rgba(0, 0, 0, 0.22);
+        --green: #1d9e75;
+        --green-dark: #0f6e56;
+        --green-light: #e1f5ee;
+        --green-text: #085041;
+        --amber: #ba7517;
+        --amber-light: #faeeda;
+        --amber-text: #633806;
+        --red: #e24b4a;
+        --red-light: #fcebeb;
+        --red-text: #791f1f;
+        --blue-light: #e6f1fb;
+        --blue-text: #0c447c;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg-primary: #1e1e1c;
+          --bg-secondary: #2a2a28;
+          --bg-tertiary: #141413;
+          --text-primary: #f0eeeb;
+          --text-secondary: #9a9a96;
+          --text-hint: #6b6b68;
+          --border-light: rgba(255, 255, 255, 0.1);
+          --border-medium: rgba(255, 255, 255, 0.2);
+        }
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        min-height: 100vh;
+      }
+      .topbar {
+        background: var(--bg-primary);
+        border-bottom: 1px solid var(--border-light);
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .logo {
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+      }
+      .logo span {
+        color: var(--green);
+      }
+      .tabs {
+        display: flex;
+        gap: 4px;
+        background: var(--bg-secondary);
+        padding: 3px;
+        border-radius: var(--radius-md);
+      }
+      .tab {
+        padding: 7px 16px;
+        font-size: 13px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        border-radius: 6px;
+        color: var(--text-secondary);
+        transition: all 0.15s;
+        font-family: inherit;
+      }
+      .tab.active {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        font-weight: 500;
+        border: 1px solid var(--border-light);
+      }
+      .main {
+        padding: 24px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .card {
+        background: var(--bg-primary);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        margin-bottom: 14px;
+      }
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .stat {
+        background: var(--bg-secondary);
+        border-radius: var(--radius-md);
+        padding: 14px 16px;
+      }
+      .stat-label {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+      }
+      .stat-val {
+        font-size: 24px;
+        font-weight: 600;
+      }
+      .stat-val.green {
+        color: var(--green);
+      }
+      .stat-val.amber {
+        color: var(--amber);
+      }
+      .stat-val.red {
+        color: var(--red);
+      }
+      .btn {
+        padding: 9px 18px;
+        border: 1px solid var(--border-medium);
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        cursor: pointer;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        transition: all 0.15s;
+        white-space: nowrap;
+        font-family: inherit;
+      }
+      .btn:hover {
+        background: var(--bg-secondary);
+      }
+      .btn.primary {
+        background: var(--green);
+        color: #fff;
+        border-color: var(--green);
+      }
+      .btn.primary:hover {
+        background: var(--green-dark);
+      }
+      .btn.danger {
+        background: var(--red);
+        color: #fff;
+        border-color: var(--red);
+        padding: 5px 10px;
+        font-size: 12px;
+      }
+      .btn.sm {
+        padding: 5px 12px;
+        font-size: 12px;
+      }
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .form-group.full {
+        grid-column: 1/-1;
+      }
+      label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+      select,
+      input[type="text"],
+      input[type="number"],
+      input[type="date"],
+      textarea {
+        padding: 9px 12px;
+        border: 1px solid var(--border-medium);
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        width: 100%;
+        font-family: inherit;
+        transition: border-color 0.15s;
+        outline: none;
+      }
+      select:focus,
+      input:focus,
+      textarea:focus {
+        border-color: var(--green);
+      }
+      textarea {
+        resize: vertical;
+        min-height: 70px;
+      }
+      .tbl-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-align: left;
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--border-light);
+        white-space: nowrap;
+        background: var(--bg-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+      td {
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--border-light);
+        vertical-align: middle;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: var(--bg-secondary);
+      }
+      .badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 20px;
+      }
+      .badge.low {
+        background: var(--amber-light);
+        color: var(--amber-text);
+      }
+      .badge.ok {
+        background: var(--green-light);
+        color: var(--green-text);
+      }
+      .badge.out {
+        background: var(--red-light);
+        color: var(--red-text);
+      }
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .chart-bars {
+        display: flex;
+        gap: 6px;
+        align-items: flex-end;
+        height: 130px;
+        padding: 4px;
+      }
+      .bar-wrap {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        min-width: 0;
+      }
+      .bar {
+        width: 100%;
+        border-radius: 3px 3px 0 0;
+        transition: height 0.5s ease;
+        min-height: 3px;
+      }
+      .bar-label {
+        font-size: 10px;
+        color: var(--text-secondary);
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 100%;
+      }
+      .bar-val {
+        font-size: 10px;
+        color: var(--text-secondary);
+      }
+      .empty {
+        text-align: center;
+        padding: 40px;
+        color: var(--text-hint);
+        font-size: 13px;
+      }
+      .alert {
+        padding: 12px 16px;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        margin-bottom: 16px;
+        line-height: 1.6;
+      }
+      .alert.info {
+        background: var(--blue-light);
+        color: var(--blue-text);
+        border: 1px solid #b5d4f4;
+      }
+      .alert.success {
+        background: var(--green-light);
+        color: var(--green-text);
+        border: 1px solid #9fe1cb;
+      }
+      .alert.error {
+        background: var(--red-light);
+        color: var(--red-text);
+        border: 1px solid #f7c1c1;
+      }
+      .status {
+        font-size: 12px;
+        color: var(--text-secondary);
+        min-height: 18px;
+      }
+      .status.ok {
+        color: var(--green);
+      }
+      .status.err {
+        color: var(--red);
+      }
+      .product-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .product-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-light);
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 12px;
+      }
+      .product-tag button {
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: var(--text-secondary);
+        font-size: 16px;
+        padding: 0;
+        line-height: 1;
+      }
+      .product-tag button:hover {
+        color: var(--red);
+      }
+      .gs-input-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .gs-input-row input {
+        flex: 1;
+      }
+      .code-block {
+        font-family: "Courier New", monospace;
+        font-size: 11px;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        padding: 14px;
+        width: 100%;
+        height: 220px;
+        resize: vertical;
+        color: var(--text-primary);
+        line-height: 1.5;
+      }
+      .filter-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .filter-row select {
+        width: auto;
+      }
+      .section-sub {
+        font-size: 13px;
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+        line-height: 1.6;
+      }
+      @media (max-width: 640px) {
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+        .topbar {
+          padding: 10px 16px;
+        }
+        .main {
+          padding: 14px;
+        }
+        .tabs .tab {
+          padding: 6px 10px;
+          font-size: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="logo">Inven<span>tory</span>Pro</div>
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('dashboard')">
+          Dashboard
+        </button>
+        <button class="tab" onclick="showTab('entry')">Entry</button>
+        <button class="tab" onclick="showTab('report')">Report</button>
+        <button class="tab" onclick="showTab('settings')">Settings</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <!-- ============================================================ SETTINGS ============================================================ -->
+      <div id="tab-settings" style="display: none">
+        <div class="card">
+          <div class="card-title">Google Sheets Connection</div>
+          <p class="section-sub">
+            Deploy the Apps Script code in your Google Sheet, then paste the URL
+            here.
+          </p>
+          <div class="gs-input-row">
+            <input
+              type="text"
+              id="gs-url"
+              placeholder="https://script.google.com/macros/s/..../exec"
+            />
+            <button class="btn primary" onclick="saveConfig()">Save</button>
+            <button class="btn" onclick="testConnection()">Test</button>
+          </div>
+          <div class="status" id="conn-status"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Google Apps Script Code</div>
+          <p class="section-sub">
+            Open Google Sheet → <strong>Extensions → Apps Script</strong> →
+            Paste the code below →
+            <strong>Deploy → New Deployment → Web App</strong> → Execute as:
+            <em>Me</em>, Who has access: <em>Anyone</em> → Deploy → Copy the
+            URL.
+          </p>
+          <textarea class="code-block" id="script-code" readonly></textarea>
+          <button
+            class="btn sm"
+            style="margin-top: 10px"
+            onclick="copyScript()"
+          >
+            📋 Copy Script
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Manage Products</div>
+          <div style="display: flex; gap: 8px; margin-bottom: 14px">
+            <input
+              type="text"
+              id="new-product"
+              placeholder="Enter new product name..."
+              style="flex: 1"
+              onkeydown="if (event.key === 'Enter') addProduct();"
+            />
+            <button class="btn primary" onclick="addProduct()">+ Add</button>
+          </div>
+          <div class="product-tags" id="product-list"></div>
+          <div
+            style="margin-top: 12px; font-size: 12px; color: var(--text-hint)"
+          >
+            Total <span id="prod-count">0</span> products
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ ENTRY ============================================================ -->
+      <div id="tab-entry" style="display: none">
+        <div id="no-cfg-entry" class="alert info" style="display: none">
+          ⚙️ First set Google Sheets URL from <strong>Settings</strong>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Add New Entry</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Product *</label>
+              <select id="entry-product"></select>
+            </div>
+            <div class="form-group">
+              <label>Date *</label>
+              <input type="date" id="entry-date" />
+            </div>
+            <div class="form-group">
+              <label>Need — How many we require</label>
+              <input
+                type="number"
+                id="entry-need"
+                min="0"
+                placeholder="0"
+                oninput="calcShort()"
+              />
+            </div>
+            <div class="form-group">
+              <label>In — How many received from HO</label>
+              <input
+                type="number"
+                id="entry-in"
+                min="0"
+                placeholder="0"
+                oninput="calcShort()"
+              />
+            </div>
+            <div class="form-group">
+              <label>Finish — Amount Used</label>
+              <input type="number" id="entry-finish" min="0" placeholder="0" />
+            </div>
+            <div class="form-group">
+              <label>Short — Still pending from HO (auto)</label>
+              <input
+                type="number"
+                id="entry-short"
+                placeholder="0"
+                readonly
+                style="
+                  background: var(--bg-secondary);
+                  color: var(--amber);
+                  font-weight: 600;
+                "
+              />
+            </div>
+            <div class="form-group full">
+              <label>Note</label>
+              <textarea
+                id="entry-note"
+                placeholder="Write any note..."
+              ></textarea>
+            </div>
+          </div>
+          <div
+            style="
+              display: flex;
+              gap: 10px;
+              align-items: center;
+              margin-top: 16px;
+            "
+          >
+            <button class="btn primary" onclick="submitEntry()">
+              💾 Save Entry
+            </button>
+            <button class="btn" onclick="clearForm()">Clear</button>
+            <span class="status" id="entry-status" style="margin: 0"></span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Recent Entries (Last 20)</div>
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>SL</th>
+                  <th>Product</th>
+                  <th>Date</th>
+                  <th>Need</th>
+                  <th>In</th>
+                  <th>Short</th>
+                  <th>Finish</th>
+                  <th>Balance</th>
+                  <th>Avg Monthly</th>
+                  <th>Note</th>
+                  <th>Del</th>
+                </tr>
+              </thead>
+              <tbody id="recent-tbody">
+                <tr>
+                  <td colspan="10" class="empty">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ DASHBOARD ============================================================ -->
+      <div id="tab-dashboard">
+        <div id="no-cfg-dash" class="alert info" style="display: none">
+          ⚙️ First set Google Sheets URL from <strong>Settings</strong>, then
+          reload this page.
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat">
+            <div class="stat-label">Total Products</div>
+            <div class="stat-val" id="stat-products">—</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Total Entries</div>
+            <div class="stat-val" id="stat-entries">—</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Low Stock</div>
+            <div class="stat-val amber" id="stat-low">—</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Out of Stock</div>
+            <div class="stat-val red" id="stat-out">—</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Total In (All)</div>
+            <div class="stat-val green" id="stat-total-in">—</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Total Finish (All)</div>
+            <div class="stat-val" id="stat-total-fin">—</div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">Top 8 Most Used Products</div>
+            <div class="chart-bars" id="usage-chart">
+              <div class="empty" style="width: 100%">No data</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Avg Monthly Need (Top 6)</div>
+            <div class="chart-bars" id="monthly-chart">
+              <div class="empty" style="width: 100%">No data</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">All Products — Current Status</div>
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>SL</th>
+                  <th>Product</th>
+                  <th>Total Need</th>
+                  <th>Total In</th>
+                  <th>Total Short</th>
+                  <th>Total Finish</th>
+                  <th>Balance</th>
+                  <th>Avg Monthly Need</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="dashboard-tbody">
+                <tr>
+                  <td colspan="7" class="empty">
+                    Please set Google Sheets URL in Settings
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ REPORT ============================================================ -->
+      <div id="tab-report" style="display: none">
+        <div class="card">
+          <div class="card-title">Filter</div>
+          <div class="filter-row">
+            <select id="filter-month">
+              <option value="">— All Months —</option>
+              <option value="01">January</option>
+              <option value="02">February</option>
+              <option value="03">March</option>
+              <option value="04">April</option>
+              <option value="05">May</option>
+              <option value="06">June</option>
+              <option value="07">July</option>
+              <option value="08">August</option>
+              <option value="09">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+            <select id="filter-year">
+              <option value="">— All Years —</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+            </select>
+            <select id="filter-product">
+              <option value="">— All Products —</option>
+            </select>
+            <button class="btn primary" onclick="applyFilter()">Filter</button>
+            <button class="btn" onclick="resetFilter()">Reset</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" id="report-title">All Entries</div>
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>SL</th>
+                  <th>Product</th>
+                  <th>Date</th>
+                  <th>Need</th>
+                  <th>In</th>
+                  <th>Short</th>
+                  <th>Finish</th>
+                  <th>Balance</th>
+                  <th>Avg Monthly</th>
+                  <th>Note</th>
+                </tr>
+              </thead>
+              <tbody id="report-tbody">
+                <tr>
+                  <td colspan="9" class="empty">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /main -->
+
+    <script>
+      // ─── State ────────────────────────────────────────────────────────────────────
+      const PRODUCTS_KEY = "invpro_products";
+      const CONFIG_KEY = "invpro_config";
+
+      let allData = [];
+      let products = [];
+      let gsUrl = "";
+
+      const DEFAULT_PRODUCTS = [
+        "A4 size Paper",
+        "Scotch Tape",
+        "Muskin Tape",
+        "Intact Toner",
+        "Used Toner",
+        "Delivery Poly",
+        "Delivery Box",
+        "Shopping Bag",
+        "Zip Poly",
+        "Carton",
+        "Black Pen",
+        "Colour Pen",
+        "File",
+        "Hand Tissue",
+        "Tolite Tissue",
+        "Black Poly",
+        "Thermal Paper",
+        "Naptholin",
+        "Shampoo",
+        "Cha Pata",
+        "Cha Masala",
+        "Ada",
+        "Suger",
+        "Hand Wash",
+        "Detergent Powder",
+        "Harpic",
+        "Odonil",
+        "Sholar Jharu",
+        "Thalabason Majuni",
+        "Toilet Brush",
+        "Label",
+        "Tag",
+        "Choto Rules",
+        "Boro Rules",
+        "Savlon Antiseptic Liquid",
+        "Vim liquid",
+        "QC Pass Sticker",
+        "Fuler Jharu",
+        "Plastic Bowl",
+        "Moylar Jhari",
+        "Aerosol",
+        "Air Freshner",
+        "One Time (TEA)",
+        "Face Mack",
+        "Permanent Marker",
+        "White Board Marker",
+        "Belecha",
+        "Glass Mug",
+        "Kacher Prich",
+        "Lexus Biscuit",
+      ];
+
+      // ─── Init ─────────────────────────────────────────────────────────────────────
+      function init() {
+        // Load products
+        const savedP = localStorage.getItem(PRODUCTS_KEY);
+        products = savedP ? JSON.parse(savedP) : [...DEFAULT_PRODUCTS];
+
+        // Load config
+        const savedC = localStorage.getItem(CONFIG_KEY);
+        if (savedC) {
+          const c = JSON.parse(savedC);
+          gsUrl = c.url || "";
+        }
+        if (gsUrl) document.getElementById("gs-url").value = gsUrl;
+
+        setScriptCode();
+        renderProductList();
+        populateDropdowns();
+
+        // Set today's date
+        document.getElementById("entry-date").value = new Date()
+          .toISOString()
+          .split("T")[0];
+
+        loadData();
+      }
+
+      // ─── Google Apps Script code ──────────────────────────────────────────────────
+      function setScriptCode() {
+        document.getElementById("script-code").value =
+          `function doGet(e)  { return handle(e); }
+function doPost(e) { return handle(e); }
+
+// ── Column index constants (0-based) ─────────────────────────────
+// SL | Product | Date | Need | In | Short | Finish | Balance | Avg Monthly Need | Note | Timestamp
+var C = { SL:0, PRODUCT:1, DATE:2, NEED:3, IN:4, SHORT:5, FINISH:6, BALANCE:7, AVG:8, NOTE:9, TS:10 };
+
+function handle(e) {
+  var ss    = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("Inventory");
+
+  if (!sheet) {
+    sheet = ss.insertSheet("Inventory");
+    sheet.appendRow([
+      "SL","Product","Date","Need","In","Short",
+      "Finish","Balance","Avg Monthly Need","Note","Timestamp"
+    ]);
+    sheet.setFrozenRows(1);
+    var hdr = sheet.getRange(1, 1, 1, 11);
+    hdr.setBackground("#1D9E75");
+    hdr.setFontColor("#ffffff");
+    hdr.setFontWeight("bold");
+    // Column widths
+    sheet.setColumnWidth(2, 160); // Product
+    sheet.setColumnWidth(3, 100); // Date
+    sheet.setColumnWidth(9, 140); // Avg Monthly Need
+    sheet.setColumnWidth(10,180); // Note
+  }
+
+  var body = {};
+  try { body = e.postData ? JSON.parse(e.postData.contents) : {}; } catch(ex) {}
+  var params = e.parameter || {};
+  Object.keys(params).forEach(function(k){ if (!body[k]) body[k] = params[k]; });
+  var action = body.action || "get";
+
+  // ─── ADD ──────────────────────────────────────────────────────────────
+  if (action === "add") {
+    var data     = sheet.getDataRange().getValues();
+    var sl       = data.length; // next SL = current row count (header counts as row 1)
+    var product  = body.product || "";
+    var inQty    = parseFloat(body["in"])   || 0;
+    var needQty  = parseFloat(body.need)    || 0;
+    var finish   = parseFloat(body.finish)  || 0;
+    var shortQty = needQty - inQty;          // auto: HO still owes us
+    var dateStr  = body.date || "";
+
+    // ── Cumulative Balance: prevBal + In - Finish ──────────────────
+    var prevBal = 0;
+    for (var i = data.length - 1; i >= 1; i--) {
+      if (String(data[i][C.PRODUCT]) === product) {
+        prevBal = parseFloat(data[i][C.BALANCE]) || 0;
+        break;
+      }
+    }
+    var bal = prevBal + inQty - finish;
+
+    // ── Avg Monthly Need: total finish ÷ distinct months ──────────
+    // Collect all finish values grouped by YYYY-MM for this product
+    var monthMap = {};
+    for (var j = 1; j < data.length; j++) {
+      if (String(data[j][C.PRODUCT]) !== product) continue;
+      var d = String(data[j][C.DATE] || "");
+      var mk = d.substring(0, 7); // "YYYY-MM"
+      if (mk && mk.length === 7) {
+        monthMap[mk] = (monthMap[mk] || 0) + (parseFloat(data[j][C.FINISH]) || 0);
+      }
+    }
+    // Also include the new entry being added right now
+    var newMk = dateStr.substring(0, 7);
+    if (newMk && newMk.length === 7) {
+      monthMap[newMk] = (monthMap[newMk] || 0) + finish;
+    }
+    var totalFinish = 0;
+    var numMonths   = 0;
+    Object.keys(monthMap).forEach(function(k) {
+      totalFinish += monthMap[k];
+      numMonths++;
+    });
+    var avg = numMonths > 0 ? Math.round((totalFinish / numMonths) * 10) / 10 : 0;
+
+    // ── Append the new row ─────────────────────────────────────────
+    sheet.appendRow([
+      sl, product, dateStr,
+      needQty, inQty, shortQty,
+      finish, bal, avg,
+      body.note || "",
+      new Date().toISOString()
+    ]);
+
+    // ── Back-update Avg Monthly Need for ALL rows of this product ──
+    // (because adding a new month changes the avg for every previous row too)
+    var allData = sheet.getDataRange().getValues();
+    for (var r = 1; r < allData.length; r++) {
+      if (String(allData[r][C.PRODUCT]) === product) {
+        sheet.getRange(r + 1, C.AVG + 1).setValue(avg);
+      }
+    }
+
+    return out({ok:true, sl:sl, balance:bal, avg:avg});
+  }
+
+  // ─── DELETE ───────────────────────────────────────────────────────────
+  if (action === "delete") {
+    var rows = sheet.getDataRange().getValues();
+    var deletedProduct = "";
+    for (var i = rows.length - 1; i >= 1; i--) {
+      if (String(rows[i][C.SL]) === String(body.sl)) {
+        deletedProduct = String(rows[i][C.PRODUCT]);
+        sheet.deleteRow(i + 1);
+        break;
+      }
+    }
+
+    // Re-calculate avg for that product after deletion
+    if (deletedProduct) {
+      var refreshed = sheet.getDataRange().getValues();
+      var mMap = {};
+      var totFin = 0;
+      for (var k = 1; k < refreshed.length; k++) {
+        if (String(refreshed[k][C.PRODUCT]) !== deletedProduct) continue;
+        var dk  = String(refreshed[k][C.DATE] || "").substring(0, 7);
+        var fin = parseFloat(refreshed[k][C.FINISH]) || 0;
+        if (dk && dk.length === 7) mMap[dk] = (mMap[dk] || 0) + fin;
+        totFin += fin;
+      }
+      var nm  = Object.keys(mMap).length;
+      var newAvg = nm > 0 ? Math.round((totFin / nm) * 10) / 10 : 0;
+      for (var r = 1; r < refreshed.length; r++) {
+        if (String(refreshed[r][C.PRODUCT]) === deletedProduct) {
+          sheet.getRange(r + 1, C.AVG + 1).setValue(newAvg);
+        }
+      }
+    }
+    return out({ok:true});
+  }
+
+  // ─── GET (default) ────────────────────────────────────────────────────
+  var rows    = sheet.getDataRange().getValues();
+  var headers = rows[0];
+  var result  = rows.slice(1).map(function(r) {
+    var obj = {};
+    headers.forEach(function(h, i) { obj[h] = r[i]; });
+    return obj;
+  });
+  return out(result);
+}
+
+function out(data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+      }
+
+      function copyScript() {
+        navigator.clipboard
+          .writeText(document.getElementById("script-code").value)
+          .then(() => {
+            const btn = event.target;
+            btn.textContent = "✅ Copied!";
+            setTimeout(() => (btn.textContent = "📋 Copy Script"), 2500);
+          });
+      }
+
+      // ─── Config ───────────────────────────────────────────────────────────────────
+      function saveConfig() {
+        gsUrl = document.getElementById("gs-url").value.trim();
+        localStorage.setItem(CONFIG_KEY, JSON.stringify({ url: gsUrl }));
+        setStatus("conn-status", "✓ Saved! Loading data...", "ok");
+        loadData();
+      }
+
+      async function testConnection() {
+        const url = document.getElementById("gs-url").value.trim();
+        if (!url) {
+          setStatus("conn-status", "Enter URL", "err");
+          return;
+        }
+        setStatus("conn-status", "Testing...");
+        try {
+          const r = await fetch(url + "?action=get");
+          if (r.ok) setStatus("conn-status", "✓ Connection successful!", "ok");
+          else setStatus("conn-status", "✗ Error: HTTP " + r.status, "err");
+        } catch (e) {
+          setStatus(
+            "conn-status",
+            "✗ Connection failed — CORS or URL issue",
+            "err",
+          );
+        }
+      }
+
+      // ─── Data ─────────────────────────────────────────────────────────────────────
+      async function loadData() {
+        if (!gsUrl) {
+          document.getElementById("no-cfg-dash").style.display = "block";
+          document.getElementById("no-cfg-entry").style.display = "block";
+          document.getElementById("dashboard-tbody").innerHTML =
+            '<tr><td colspan="9" class="empty">Please set Google Sheets URL in Settings</td></tr>';
+          return;
+        }
+        document.getElementById("no-cfg-dash").style.display = "none";
+        document.getElementById("no-cfg-entry").style.display = "none";
+        try {
+          const r = await fetch(gsUrl + "?action=get&t=" + Date.now());
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          const json = await r.json();
+          allData = Array.isArray(json) ? json : [];
+          renderDashboard();
+          renderRecent();
+          renderReport(allData);
+        } catch (e) {
+          console.warn("loadData error:", e);
+        }
+      }
+
+      // ─── Submit ───────────────────────────────────────────────────────────────────
+      async function submitEntry() {
+        const product = document.getElementById("entry-product").value;
+        const date = document.getElementById("entry-date").value;
+        if (!product) {
+          setStatus("entry-status", "⚠ Please select a product", "err");
+          return;
+        }
+        if (!date) {
+          setStatus("entry-status", "⚠ Please enter a date", "err");
+          return;
+        }
+        if (!gsUrl) {
+          setStatus(
+            "entry-status",
+            "⚠ Please set Google Sheets URL in Settings",
+            "err",
+          );
+          return;
+        }
+
+        setStatus("entry-status", "Saving...");
+        const params = new URLSearchParams({
+          action: "add",
+          product: product,
+          date: date,
+          need: document.getElementById("entry-need").value || "0",
+          in: document.getElementById("entry-in").value || "0",
+          finish: document.getElementById("entry-finish").value || "0",
+          note: document.getElementById("entry-note").value || "",
+        });
+        try {
+          // Google Apps Script requires GET params or urlencoded POST (no JSON Content-Type for CORS)
+          await fetch(gsUrl + "?" + params.toString(), {
+            method: "GET",
+            mode: "no-cors",
+          });
+          setStatus("entry-status", "✓ Saved! Reloading data...", "ok");
+          clearForm();
+          setTimeout(() => loadData(), 1500); // wait a bit for sheet to update
+        } catch (e) {
+          setStatus("entry-status", "✗ Error: " + e.message, "err");
+        }
+      }
+
+      function calcShort() {
+        const need =
+          parseFloat(document.getElementById("entry-need").value) || 0;
+        const inn = parseFloat(document.getElementById("entry-in").value) || 0;
+        const short = need - inn;
+        document.getElementById("entry-short").value = short !== 0 ? short : "";
+      }
+
+      function clearForm() {
+        [
+          "entry-need",
+          "entry-in",
+          "entry-short",
+          "entry-finish",
+          "entry-note",
+        ].forEach((id) => {
+          document.getElementById(id).value = "";
+        });
+        document.getElementById("entry-date").value = new Date()
+          .toISOString()
+          .split("T")[0];
+      }
+
+      async function deleteEntry(sl) {
+        if (!confirm("Delete this entry?")) return;
+        const params = new URLSearchParams({
+          action: "delete",
+          sl: String(sl),
+        });
+        await fetch(gsUrl + "?" + params.toString(), {
+          method: "GET",
+          mode: "no-cors",
+        });
+        setTimeout(() => loadData(), 1500);
+      }
+
+      // ─── Dashboard ────────────────────────────────────────────────────────────────
+      function renderDashboard() {
+        document.getElementById("stat-products").textContent = products.length;
+        document.getElementById("stat-entries").textContent = allData.length;
+
+        // Aggregate — avg comes from Sheet's "Avg Monthly Need" col (server-computed)
+        // fallback: compute from distinct months if column missing
+        const agg = {};
+        allData.forEach((r) => {
+          const p = r.Product || "(Unknown)";
+          if (!agg[p])
+            agg[p] = {
+              need: 0,
+              in: 0,
+              short: 0,
+              finish: 0,
+              lastBal: 0,
+              lastAvg: 0,
+              monthFinish: {},
+            };
+          agg[p].need += parseFloat(r.Need) || 0;
+          agg[p].in += parseFloat(r.In) || 0;
+          agg[p].short += parseFloat(r.Short) || 0;
+          agg[p].finish += parseFloat(r.Finish) || 0;
+          const b = parseFloat(r.Balance);
+          if (!isNaN(b)) agg[p].lastBal = b;
+          // Server stores latest avg in "Avg Monthly Need" — take the last one
+          const sa = parseFloat(r["Avg Monthly Need"]);
+          if (!isNaN(sa) && sa > 0) agg[p].lastAvg = sa;
+          // Also track per-month finish for fallback calculation
+          const mk = String(r.Date || "").substring(0, 7);
+          if (mk && mk.length === 7) {
+            const f = parseFloat(r.Finish) || 0;
+            agg[p].monthFinish[mk] = (agg[p].monthFinish[mk] || 0) + f;
+          }
+        });
+
+        let low = 0,
+          out = 0,
+          totalIn = 0,
+          totalFin = 0,
+          sl = 1,
+          rows = "";
+
+        const entries = Object.entries(agg);
+        entries.forEach(([name, v]) => {
+          const bal = v.lastBal;
+          // Use server-stored avg if available, else calculate from distinct months
+          const nm = Object.keys(v.monthFinish).length;
+          const avg =
+            v.lastAvg > 0
+              ? v.lastAvg
+              : nm > 0
+                ? Math.round((v.finish / nm) * 10) / 10
+                : 0;
+          totalIn += v.in;
+          totalFin += v.finish;
+
+          let status = "ok",
+            label = "OK";
+          if (bal <= 0) {
+            status = "out";
+            label = "Out of Stock";
+            out++;
+          } else if (avg > 0 && bal < avg) {
+            status = "low";
+            label = "Low Stock";
+            low++;
+          }
+
+          const balColor =
+            bal > 0
+              ? "var(--green)"
+              : bal < 0
+                ? "var(--red)"
+                : "var(--text-secondary)";
+          const balSign = bal > 0 ? "+" : "";
+          rows += `<tr>
+      <td>${sl++}</td>
+      <td style="font-weight:500">${esc(name)}</td>
+      <td>${v.need}</td>
+      <td>${v.in}</td>
+      <td style="color:${v.short > 0 ? "var(--amber)" : "inherit"};font-weight:${v.short > 0 ? "600" : "400"}">${v.short}</td>
+      <td>${v.finish}</td>
+      <td style="font-weight:700;color:${balColor}">${balSign}${bal}</td>
+      <td>${avg > 0 ? avg.toFixed(1) : "—"}</td>
+      <td><span class="badge ${status}">${label}</span></td>
+    </tr>`;
+        });
+
+        document.getElementById("stat-low").textContent = low;
+        document.getElementById("stat-out").textContent = out;
+        document.getElementById("stat-total-in").textContent = totalIn;
+        document.getElementById("stat-total-fin").textContent = totalFin;
+        document.getElementById("dashboard-tbody").innerHTML =
+          rows || '<tr><td colspan="9" class="empty">No data found</td></tr>';
+
+        // Charts
+        const byFinish = [...entries]
+          .sort((a, b) => b[1].finish - a[1].finish)
+          .slice(0, 8);
+        renderBarChart(
+          "usage-chart",
+          byFinish.map(([n, v]) => ({ label: n, val: v.finish })),
+          "#5DCAA5",
+        );
+
+        const byMonthly = Object.entries(agg)
+          .map(([n, v]) => {
+            const nm = Object.keys(v.monthFinish).length;
+            const avg =
+              v.lastAvg > 0
+                ? v.lastAvg
+                : nm > 0
+                  ? Math.round((v.finish / nm) * 10) / 10
+                  : 0;
+            return { label: n, val: avg };
+          })
+          .sort((a, b) => b.val - a.val)
+          .slice(0, 6);
+        renderBarChart("monthly-chart", byMonthly, "#FAC775");
+      }
+
+      function renderBarChart(id, data, color) {
+        const el = document.getElementById(id);
+        if (!data.length || data.every((d) => d.val === 0)) {
+          el.innerHTML = '<div class="empty" style="width:100%">No data</div>';
+          return;
+        }
+        const max = Math.max(...data.map((d) => d.val));
+        el.innerHTML = data
+          .map((d) => {
+            const h = max > 0 ? Math.round((d.val / max) * 110) : 0;
+            const lbl =
+              d.label.length > 9 ? d.label.substring(0, 9) + "…" : d.label;
+            return `<div class="bar-wrap">
+      <div class="bar-val">${d.val}</div>
+      <div class="bar" style="height:${h}px;background:${color}"></div>
+      <div class="bar-label" title="${esc(d.label)}">${esc(lbl)}</div>
+    </div>`;
+          })
+          .join("");
+      }
+
+      // ─── Recent entries ───────────────────────────────────────────────────────────
+      function renderRecent() {
+        const tbody = document.getElementById("recent-tbody");
+        if (!allData.length) {
+          tbody.innerHTML =
+            '<tr><td colspan="11" class="empty">No data found</td></tr>';
+          return;
+        }
+        const recent = [...allData].reverse().slice(0, 20);
+        tbody.innerHTML = recent
+          .map((r, i) => {
+            const avg = parseFloat(r["Avg Monthly Need"]);
+            return `<tr>
+    <td>${r.SL !== undefined ? r.SL : i + 1}</td>
+    <td style="font-weight:500">${esc(r.Product || "")}</td>
+    <td>${esc(String(r.Date || ""))}</td>
+    <td>${r.Need || 0}</td>
+    <td>${r.In || 0}</td>
+    <td style="color:${parseFloat(r.Short) > 0 ? "var(--amber)" : "inherit"};font-weight:${parseFloat(r.Short) > 0 ? "600" : "400"}">${r.Short || 0}</td>
+    <td>${r.Finish || 0}</td>
+    <td style="font-weight:600;color:${parseFloat(r.Balance) > 0 ? "var(--green)" : parseFloat(r.Balance) < 0 ? "var(--red)" : "inherit"}">${r.Balance || 0}</td>
+    <td>${!isNaN(avg) && avg > 0 ? avg.toFixed(1) : "—"}</td>
+    <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(String(r.Note || ""))}">${esc(String(r.Note || ""))}</td>
+    <td><button class="btn danger" onclick="deleteEntry('${r.SL}')">🗑</button></td>
+  </tr>`;
+          })
+          .join("");
+      }
+
+      // ─── Report ───────────────────────────────────────────────────────────────────
+      function renderReport(data) {
+        const tbody = document.getElementById("report-tbody");
+        if (!data.length) {
+          tbody.innerHTML =
+            '<tr><td colspan="10" class="empty">No data found</td></tr>';
+          return;
+        }
+        tbody.innerHTML = data
+          .map((r, i) => {
+            const avg = parseFloat(r["Avg Monthly Need"]);
+            return `<tr>
+    <td>${r.SL !== undefined ? r.SL : i + 1}</td>
+    <td style="font-weight:500">${esc(r.Product || "")}</td>
+    <td>${esc(String(r.Date || ""))}</td>
+    <td>${r.Need || 0}</td>
+    <td>${r.In || 0}</td>
+    <td style="color:${parseFloat(r.Short) > 0 ? "var(--amber)" : "inherit"};font-weight:${parseFloat(r.Short) > 0 ? "600" : "400"}">${r.Short || 0}</td>
+    <td>${r.Finish || 0}</td>
+    <td style="font-weight:600;color:${parseFloat(r.Balance) > 0 ? "var(--green)" : parseFloat(r.Balance) < 0 ? "var(--red)" : "inherit"}">${r.Balance || 0}</td>
+    <td>${!isNaN(avg) && avg > 0 ? avg.toFixed(1) : "—"}</td>
+    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(String(r.Note || ""))}">${esc(String(r.Note || ""))}</td>
+  </tr>`;
+          })
+          .join("");
+      }
+
+      function applyFilter() {
+        const month = document.getElementById("filter-month").value;
+        const year = document.getElementById("filter-year").value;
+        const product = document.getElementById("filter-product").value;
+        let filtered = allData;
+        if (product) filtered = filtered.filter((r) => r.Product === product);
+        if (year)
+          filtered = filtered.filter(
+            (r) => String(r.Date || "").substring(0, 4) === year,
+          );
+        if (month)
+          filtered = filtered.filter(
+            (r) => String(r.Date || "").substring(5, 7) === month,
+          );
+        const parts = [];
+        if (year) parts.push(year);
+        if (month)
+          parts.push(
+            [
+              "Jan",
+              "Feb",
+              "Mar",
+              "Apr",
+              "May",
+              "Jun",
+              "Jul",
+              "Aug",
+              "Sep",
+              "Oct",
+              "Nov",
+              "Dec",
+            ][parseInt(month) - 1],
+          );
+        if (product) parts.push(product);
+        document.getElementById("report-title").textContent = parts.length
+          ? parts.join(" — ") + " (" + filtered.length + " entries)"
+          : "All Entries";
+        renderReport(filtered);
+      }
+
+      function resetFilter() {
+        ["filter-month", "filter-year", "filter-product"].forEach(
+          (id) => (document.getElementById(id).value = ""),
+        );
+        document.getElementById("report-title").textContent = "All Entries";
+        renderReport(allData);
+      }
+
+      // ─── Products ─────────────────────────────────────────────────────────────────
+      function renderProductList() {
+        document.getElementById("prod-count").textContent = products.length;
+        document.getElementById("product-list").innerHTML = products
+          .map(
+            (p, i) =>
+              `<span class="product-tag">${esc(p)} <button onclick="removeProduct(${i})" title="Remove">×</button></span>`,
+          )
+          .join("");
+      }
+
+      function addProduct() {
+        const val = document.getElementById("new-product").value.trim();
+        if (!val || products.includes(val)) return;
+        products.push(val);
+        saveProducts();
+        document.getElementById("new-product").value = "";
+        renderProductList();
+        populateDropdowns();
+      }
+
+      function removeProduct(i) {
+        if (!confirm('"' + products[i] + '" remove this product?')) return;
+        products.splice(i, 1);
+        saveProducts();
+        renderProductList();
+        populateDropdowns();
+      }
+
+      function saveProducts() {
+        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+      }
+
+      function populateDropdowns() {
+        const opts = products
+          .map((p) => `<option value="${esc(p)}">${esc(p)}</option>`)
+          .join("");
+        document.getElementById("entry-product").innerHTML = opts;
+        document.getElementById("filter-product").innerHTML =
+          '<option value="">— All Products —</option>' + opts;
+      }
+
+      // ─── Tabs ─────────────────────────────────────────────────────────────────────
+      function showTab(name) {
+        const names = ["dashboard", "entry", "report", "settings"];
+        names.forEach(
+          (t) =>
+            (document.getElementById("tab-" + t).style.display =
+              t === name ? "block" : "none"),
+        );
+        document
+          .querySelectorAll(".tab")
+          .forEach((btn, i) =>
+            btn.classList.toggle("active", names[i] === name),
+          );
+        if (name === "report") renderReport(allData);
+      }
+
+      // ─── Helpers ──────────────────────────────────────────────────────────────────
+      function setStatus(id, msg, cls) {
+        const el = document.getElementById(id);
+        el.textContent = msg;
+        el.className = "status" + (cls ? " " + cls : "");
+      }
+
+      function esc(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      // ─── Boot ─────────────────────────────────────────────────────────────────────
+      init();
+    </script>
+  </body>
+</html>
